@@ -3,7 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function AddProduct() {
+type Product = {
+    id:number;
+    title:string;
+    price:number;
+}
+
+export default function DeleteProduct(product: Product) {
 
     const [modal,setModal] = useState(false)
     
@@ -12,9 +18,9 @@ export default function AddProduct() {
 
     const router = useRouter()
 
-    async function handleDelete(){
+    async function handleDelete(productId:number){
         setIsMutating(true)
-        await fetch('http://localhost:5000/products',{
+        await fetch(`http://localhost:5000/products/${productId}`,{
             method: 'DELETE',
         })
         // mematikan loading save
@@ -40,14 +46,14 @@ export default function AddProduct() {
 
         <div className="modal">
             <div className="modal-box">
-                <h3 className="font-bold text-large">Are you sure to remove? </h3>
+                <h3 className="font-bold text-large">Are you sure to remove {product.title}? </h3>
                 
                     <div className="modal-action">
                         <button type="button" className="btn" onClick={handleChange}>Close</button>
                         {!isMutating ? (
-                            <button type="submit" className="btn btn-primary">Save</button>
+                            <button type="submit" onClick={() => handleDelete(product.id)} className="btn btn-primary">Delete</button>
                         ):(
-                            <button type="button" className="btn loading">Saving...</button>
+                            <button type="button" className="btn loading">Deleting...</button>
                         )}
                     </div>
 
