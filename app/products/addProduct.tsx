@@ -1,4 +1,5 @@
 "use client";
+//synthetic untuk gunakan e. pada typescript
 import { SyntheticEvent,useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -7,11 +8,15 @@ export default function AddProduct() {
     const[price, setPrice] = useState("")
 
     const [modal,setModal] = useState(false)
+    
+    //untuk membuat loading hingga data berhasil tersimpan
+    const [isMutating,setIsMutating] = useState(false)
 
     const router = useRouter()
 
     async function handleSubmit(e:SyntheticEvent){
         e.preventDefault();
+        setIsMutating(true)
         await fetch('http://localhost:5000/products',{
             method: 'POST',
             headers: {
@@ -22,10 +27,15 @@ export default function AddProduct() {
                 price:price,
             })
         })
-
+        // mematikan loading save
+        setIsMutating(false)
         setTitle("")
         setPrice("")
+
+        // refresh page 
         router.refresh()
+
+        // close create new page
         setModal(false)
     }
 
@@ -56,7 +66,11 @@ export default function AddProduct() {
 
                     <div className="modal-action">
                         <button type="button" className="btn" onClick={handleChange}>Close</button>
-                        <button type="submit" className="btn btn-primary">Save</button>
+                        {!isMutating ? (
+                            <button type="submit" className="btn btn-primary">Save</button>
+                        ):(
+                            <button type="button" className="btn loading">Saving...</button>
+                        )}
                     </div>
                 </form>
             </div>
